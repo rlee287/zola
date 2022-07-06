@@ -2,7 +2,8 @@ use std::fs::create_dir_all;
 use std::path::{Path, PathBuf};
 
 use libs::glob::glob;
-use libs::sass_rs::{compile_file, Options, OutputStyle};
+use libs::rsass::{compile_scss_path, output::Format};
+//use libs::sass_rs::{compile_file, Options, OutputStyle};
 
 use crate::anyhow;
 use errors::{bail, Result};
@@ -17,11 +18,12 @@ pub fn compile_sass(base_path: &Path, output_path: &Path) -> Result<()> {
         sass_path
     };
 
-    let mut options = Options { output_style: OutputStyle::Compressed, ..Default::default() };
-    let mut compiled_paths = compile_sass_glob(&sass_path, output_path, "scss", &options)?;
+    let format_options = Format::default();
+    //let mut options = Options { output_style: OutputStyle::Compressed, ..Default::default() };
+    let mut compiled_paths = compile_sass_glob(&sass_path, output_path, "scss", &format_options)?;
 
-    options.indented_syntax = true;
-    compiled_paths.extend(compile_sass_glob(&sass_path, output_path, "sass", &options)?);
+    //options.indented_syntax = true;
+    compiled_paths.extend(compile_sass_glob(&sass_path, output_path, "sass", &format_options)?);
 
     compiled_paths.sort();
     for window in compiled_paths.windows(2) {
@@ -42,13 +44,13 @@ fn compile_sass_glob(
     sass_path: &Path,
     output_path: &Path,
     extension: &str,
-    options: &Options,
+    options: &Format,
 ) -> Result<Vec<(PathBuf, PathBuf)>> {
     let files = get_non_partial_scss(sass_path, extension);
 
     let mut compiled_paths = Vec::new();
     for file in files {
-        let css = compile_file(&file, options.clone()).map_err(|e| anyhow!(e))?;
+        let css = compile_scss_path(&file, options.clone()).map_err(|e| anyhow!(e))?;
 
         let path_inside_sass = file.strip_prefix(&sass_path).unwrap();
         let parent_inside_sass = path_inside_sass.parent();
