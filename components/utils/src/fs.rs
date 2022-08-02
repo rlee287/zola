@@ -19,10 +19,10 @@ pub fn is_path_in_directory(parent: &Path, path: &Path) -> Result<bool> {
 }
 
 /// Create a file with the content given
-pub fn create_file(path: &Path, content: &str) -> Result<()> {
+pub fn create_file<T: AsRef<[u8]>>(path: &Path, content: T) -> Result<()> {
     let mut file =
         File::create(path).with_context(|| format!("Failed to create file {}", path.display()))?;
-    file.write_all(content.as_bytes())?;
+    file.write_all(content.as_ref())?;
     Ok(())
 }
 
