@@ -39,7 +39,7 @@ use time::{OffsetDateTime, UtcOffset};
 use libs::percent_encoding;
 use libs::serde_json;
 use notify::{watcher, RecursiveMode, Watcher};
-use ws::{Message, Sender, WebSocket};
+use parity_ws::{Message, Sender, WebSocket};
 
 use errors::{anyhow, Context, Result};
 use libs::globset::GlobSet;
